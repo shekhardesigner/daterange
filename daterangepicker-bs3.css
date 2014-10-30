@@ -20,21 +20,27 @@
 
 .daterangepicker.opensright .ranges, .daterangepicker.opensright .calendar,
 .daterangepicker.openscenter .ranges, .daterangepicker.openscenter .calendar {
-  float: right;
+  float: none;
   margin: 4px;
 }
 
-.daterangepicker.single .ranges, .daterangepicker.single .calendar {
+.daterangepicker.single .ranges{
   float: none;
 }
 
+.daterangepicker .calendar.left {
+  float:left;
+}
+.daterangepicker .calendar.right {
+  float:right;
+}
+
+
 .daterangepicker .ranges {
-  width: 160px;
   text-align: left;
 }
 
 .daterangepicker .ranges .range_inputs>div {
-  float: left;
 }
 
 .daterangepicker .ranges .range_inputs>div:nth-child(2) {
@@ -71,7 +77,6 @@
   line-height: 20px;
   margin-bottom: 2px;
   text-shadow: #fff 1px 1px 0px;
-  text-transform: uppercase;
   width: 74px;
 }
 
@@ -141,8 +146,11 @@
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
+  width: 560px;
 }
-
+.daterangepicker.single {
+  width:auto;
+}
 .daterangepicker.opensleft:before {
   position: absolute;
   top: -7px;
@@ -317,4 +325,10 @@
 
 .daterangepicker th.month {
   width: auto;
+}
+
+.daterangepicker .range-toolbar {
+  padding: 10px;
+  background:#f0f0f0;
+  margin: 10px -8px -8px;
 }
