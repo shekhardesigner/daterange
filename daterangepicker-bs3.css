@@ -146,7 +146,7 @@
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
-  width: 560px;
+  width: 500px;
 }
 .daterangepicker.single {
   width:auto;
@@ -331,4 +331,25 @@
   padding: 10px;
   background:#f0f0f0;
   margin: 10px -8px -8px;
+}
+
+/* custom css */
+.daterangepicker{
+  width:555px;
+}
+
+.today {
+  border:1px solid #000;
+}
+
+.active.today {
+  border:0;
+}
+
+.daterangepicker td.off {
+  /*visibility:hidden;*/
+}
+
+.invalid-date {
+  border:1px solid #F00;
 }

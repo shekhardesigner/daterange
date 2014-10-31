@@ -444,12 +444,23 @@
         },
 
         onBlurOut: function(e) {
-            //this.updateFromControl();
+            var el = $(e.target),
+                val = el.val(),
+                code = e.keyCode,
+                date = moment(val, this.format),
+                yearRegExp = new RegExp("\\d{4}$");
+
             this.hide();
-            var el = $(e.target);
-            var date = moment(el.val(), this.format);
+
+            if(val.length >= 10 && yearRegExp.test(val) && code !== 32 && code !== 8 && code !== 37 && code !== 16 && date.isValid()) {
+                this.startDate = this.endDate = date;
+                this.setStartDate(this.startDate);
+            }
+
             if (!date.isValid()) {
                 this.element.addClass('invalid-date');
+            } else {
+                this.element.removeClass('invalid-date');
             }
         },
 
@@ -715,7 +726,6 @@
         },
 
         inputsKeydown: function(e) {
-            console.log(e.keyCode)
             if (e.keyCode === 13) {
                 this.inputsChanged(e);
                 this.notify();
@@ -878,6 +888,8 @@
 
             if (this.singleDatePicker && !this.timePicker)
                 this.clickApply();
+
+            this.element.removeClass('invalid-date');
         },
 
         clickApply: function(e) {
@@ -1065,8 +1077,6 @@
         },
 
         renderCalendar: function(calendar, selected, minDate, maxDate, side, enableToggle) {
-
-            console.log(this.calendarDisabled);
 
             var html = '<div class="calendar-date">';
             html += '<table class="table-condensed">';
@@ -1293,6 +1303,7 @@
             this.updateView();
             this.updateCalendars();
             $('.today').removeClass('active')
+            this.element.removeClass('invalid-date');
         }
 
     };
