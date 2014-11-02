@@ -89,7 +89,18 @@
         this.container.find('.applyBtn').html(this.locale.applyLabel);
         this.container.find('.cancelBtn').html(this.locale.cancelLabel);
 
+
         //event listeners
+        if (this.element.is('input')) {
+            this.element.on({
+                'click.daterangepicker': $.proxy(this.show, this),
+                'focus.daterangepicker': $.proxy(this.show, this),
+                'keyup.daterangepicker': $.proxy(this.manualEntry, this),
+                'blur.daterangepicker': $.proxy(this.blur, this)
+            });
+        } else {
+            this.element.on('click.daterangepicker', $.proxy(this.toggle, this));
+        }
 
         this.container.find('.calendar')
             .on('click.daterangepicker', '.prev', $.proxy(this.clickPrev, this))
@@ -115,16 +126,6 @@
             .on('mouseleave.daterangepicker', 'li', $.proxy(this.updateFormInputs, this));
 
         $(this.clearHandler).on('click.clearcalendar', $.proxy(this.clearCalendar, this));
-
-        if (this.element.is('input')) {
-            this.element.on({
-                'click.daterangepicker': $.proxy(this.show, this),
-                'focus.daterangepicker': $.proxy(this.show, this),
-                'keyup.daterangepicker': $.proxy(this.onBlurOut, this)
-            });
-        } else {
-            this.element.on('click.daterangepicker', $.proxy(this.toggle, this));
-        }
     };
 
     DateRangePicker.prototype = {
@@ -441,27 +442,6 @@
 
             $('.today').removeClass('active')
 
-        },
-
-        onBlurOut: function(e) {
-            var el = $(e.target),
-                val = el.val(),
-                code = e.keyCode,
-                date = moment(val, this.format),
-                yearRegExp = new RegExp("\\d{4}$");
-
-            this.hide();
-
-            if(val.length >= 10 && yearRegExp.test(val) && code !== 32 && code !== 8 && code !== 37 && code !== 16 && date.isValid()) {
-                this.startDate = this.endDate = date;
-                this.setStartDate(this.startDate);
-            }
-
-            if (!date.isValid()) {
-                this.element.addClass('invalid-date');
-            } else {
-                this.element.removeClass('invalid-date');
-            }
         },
 
         setStartDate: function(startDate) {
@@ -845,12 +825,13 @@
         clickDate: function(e) {
             if(this.calendarDisabled) return;
 
-            var title = $(e.target).attr('data-title');
-            var row = title.substr(1, 1);
-            var col = title.substr(3, 1);
-            var cal = $(e.target).parents('.calendar');
-
-            var startDate, endDate;
+            var title = $(e.target).attr('data-title'),
+                row = title.substr(1, 1),
+                col = title.substr(3, 1),
+                cal = $(e.target).parents('.calendar'),
+                startDate,
+                endDate;
+            
             if (cal.hasClass('left')) {
                 startDate = this.leftCalendar.calendar[row][col];
                 endDate = this.endDate;
@@ -1297,13 +1278,49 @@
         },
 
         clearCalendar: function(e){
-            this.element.val('').removeAttr('disabled');
             this.calendarDisabled = false;
-            this.startDate = this.endDate = moment();
-            this.updateView();
-            this.updateCalendars();
+            this.element.val('').removeAttr('disabled');
+            this.setCustomDates(moment(), moment())
             $('.today').removeClass('active')
             this.element.removeClass('invalid-date');
+        },
+    
+        manualEntry: function(e) {
+            var el = $(e.target),
+                val = el.val(),
+                code = e.keyCode,
+                date = moment(val, this.format, true),
+                yearRegExp = new RegExp("\\d{4}$"),
+                singleDigitRegExp = new RegExp("^(\\d{1}\\s)$");
+
+            this.hide();
+
+            if(singleDigitRegExp.test(val)) {
+                el.val('0'+val);
+            }
+
+            if(val.length >= 10 && yearRegExp.test(val) && code !== 32 && code !== 8 && code !== 37 && code !== 16 && date.isValid()) {
+                this.startDate = this.endDate = date;
+                this.setStartDate(this.startDate);
+            }
+
+            if (!date.isValid()) {
+                this.element.addClass('invalid-date');
+                this.setCustomDates(moment(), moment())
+                $('.today').removeClass('active')
+            } else {
+                this.element.removeClass('invalid-date');
+            }
+        },
+
+        blur: function (e) {
+            setTimeout(this.check.bind(this),100);
+        },
+
+        check: function(){
+            if(this.element.val().length === 0) {
+                this.clearCalendar();
+            }
         }
 
     };
