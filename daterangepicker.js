@@ -91,17 +91,6 @@
 
 
         //event listeners
-        if (this.element.is('input')) {
-            this.element.on({
-                'click.daterangepicker': $.proxy(this.show, this),
-                'focus.daterangepicker': $.proxy(this.show, this),
-                'keyup.daterangepicker': $.proxy(this.manualEntry, this),
-                'blur.daterangepicker': $.proxy(this.blur, this)
-            });
-        } else {
-            this.element.on('click.daterangepicker', $.proxy(this.toggle, this));
-        }
-
         this.container.find('.calendar')
             .on('click.daterangepicker', '.prev', $.proxy(this.clickPrev, this))
             .on('click.daterangepicker', '.next', $.proxy(this.clickNext, this))
@@ -126,6 +115,17 @@
             .on('mouseleave.daterangepicker', 'li', $.proxy(this.updateFormInputs, this));
 
         $(this.clearHandler).on('click.clearcalendar', $.proxy(this.clearCalendar, this));
+        
+        if (this.element.is('input')) {
+            this.element.on({
+                'click.daterangepicker': $.proxy(this.show, this),
+                'focus.daterangepicker': $.proxy(this.show, this),
+                'keyup.daterangepicker': $.proxy(this.manualEntry, this),
+                'blur.daterangepicker': $.proxy(this.blur, this)
+            });
+        } else {
+            this.element.on('click.daterangepicker', $.proxy(this.toggle, this));
+        }
     };
 
     DateRangePicker.prototype = {
@@ -318,14 +318,17 @@
 
             //if no start/end dates set, check if an input element contains initial values
             if (typeof options.startDate === 'undefined' && typeof options.endDate === 'undefined') {
+
                 if ($(this.element).is('input[type=text]')) {
-                    var val = $(this.element).val();
-                    var split = val.split(this.separator);
+                    var val = $(this.element).val(),
+                        split = val.split(this.separator);
+                    
                     start = end = null;
+
                     if (split.length == 2) {
                         start = moment(split[0], this.format);
                         end = moment(split[1], this.format);
-                    } else if (this.singleDatePicker) {
+                    } else if (this.singleDatePicker && val !== "") {
                         start = moment(val, this.format);
                         end = moment(val, this.format);
                     }
@@ -769,6 +772,7 @@
             } else {
                 this.rightCalendar.month.add(1, 'month');
             }
+
             this.updateCalendars();
         },
 

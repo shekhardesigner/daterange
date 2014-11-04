@@ -40,7 +40,6 @@
           $('[datepicker="single"]').daterangepicker({
           		singleDatePicker: true,
           		format: 'DD MMMM YYYY',
-          		startDate: new Date(),
           		locale: {
           			monthNames: moment.months()
           		},
@@ -50,17 +49,16 @@
           });
 
 
-          $('[datepicker="daterange"]').daterangepicker({
-          		format: 'DD MMMM YYYY',
-          		startDate: moment().subtract(1, 'months'),
-          		locale: {
-          			monthNames: moment.months(),
-          			fromLabel: 'Start date',
-          			toLabel: 'End date'
-          		},
-          		cancelClass: 'btn-link pull-left',
-          		applyClass: 'btn-primary pull-right'
-          });
+          // $('[datepicker="daterange"]').daterangepicker({
+          // 		format: 'DD MMMM YYYY',
+          // 		locale: {
+          // 			monthNames: moment.months(),
+          // 			fromLabel: 'Start date',
+          // 			toLabel: 'End date'
+          // 		},
+          // 		cancelClass: 'btn-link pull-left',
+          // 		applyClass: 'btn-primary pull-right'
+          // });
        });
        </script>
 </body>
