@@ -600,7 +600,10 @@
         show: function(e) {
             if (this.isShowing) return;
 
+            this.updateView(true);
+            this.updateCalendars();
             this.element.addClass('active');
+            $('.today').removeClass('active')
             this.container.show();
             this.move();
 
@@ -677,18 +680,17 @@
         },
 
         toggleCalendar: function(){
-            var isChecked = $('.' + this.toggleElementClass).find('input').is(':checked');
 
-            if(isChecked) {
+            if(!this.calendarDisabled) {
                 this.calendarDisabled = true;
                 this.element.val('No end date'); //.attr('disabled', 'disabled');
                 this.container.find('.calendar-date tbody, .calendar-date thead tr:first-child').addClass('text-muted');
-                this.hide();
             } else {
                 this.calendarDisabled = false;
                 this.clearCalendar();
                 this.element.val(''); //.removeAttr('disabled');
             }
+            this.hide();
         },
 
         // when a date is typed into the start to end date textboxes
@@ -1066,7 +1068,11 @@
             var html = '<div class="calendar-date">';
             html += '<table class="table-condensed">';
             html += '<thead>';
-            html += '<tr>';
+
+            if(this.calendarDisabled)
+                html += '<tr class="text-muted">';
+            else
+                html += '<tr>';
 
             // add empty cell for week number
             if (this.showWeekNumbers)
@@ -1106,7 +1112,11 @@
 
             html += '</tr>';
             html += '</thead>';
-            html += '<tbody>';
+
+            if(this.calendarDisabled)
+                html += '<tbody class="text-muted">';
+            else
+                html += '<tbody>';
 
             for (var row = 0; row < 6; row++) {
                 html += '<tr>';
@@ -1151,8 +1161,17 @@
             html += '</tbody>';
             html += '</table>';
 
-            if (enableToggle)
-                html += '<div class="checkbox-inline ' + this.toggleElementClass + '"><input id="enableToggleLabel" type="checkbox"><label for="enableToggleLabel" >' + this.enableToggleLabel + '</label></div>';
+            if (enableToggle) {
+                html += '<div class="checkbox-inline ' + this.toggleElementClass + '">';
+
+                if(this.calendarDisabled)
+                    html += '<input id="enableToggleLabel" type="checkbox" checked="checked">';
+                else
+                    html += '<input id="enableToggleLabel" type="checkbox">';
+
+                html += '<label for="enableToggleLabel" >' + this.enableToggleLabel + '</label></div>';
+            }
+
 
             html += '</div>';
 
@@ -1295,13 +1314,18 @@
                 code = e.keyCode,
                 date = moment(val, this.format, true),
                 yearRegExp = new RegExp("\\d{4}$"),
-                singleDigitRegExp = new RegExp("^(\\d{1}\\s)$");
+                singleDigitRegExp = new RegExp("^(\\d{1}\\s)$"),
+                whitespace = new RegExp("^(\\s+)");
 
             this.hide();
 
-            if(singleDigitRegExp.test(val)) {
+            console.log(val, whitespace.test(val))
+            if(whitespace.test(val))
+                val = val.replace(whitespace, '');
+
+            if(singleDigitRegExp.test(val))
                 el.val('0'+val);
-            }
+            
 
             if(val.length >= 10 && yearRegExp.test(val) && code !== 32 && code !== 8 && code !== 37 && code !== 16 && date.isValid()) {
                 this.startDate = this.endDate = date;
@@ -1318,6 +1342,16 @@
         },
 
         blur: function (e) {
+            var el = $(e.target),
+                val = el.val(),
+                date = moment(val, this.format, true);
+
+            if(date.isValid()) {
+                this.startDate = this.endDate = date;
+                this.setStartDate(this.startDate);
+                return false;
+            }
+
             setTimeout(this.check.bind(this),100);
         },
 
