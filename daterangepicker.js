@@ -685,6 +685,8 @@
                 this.calendarDisabled = true;
                 this.element.val('No end date'); //.attr('disabled', 'disabled');
                 this.container.find('.calendar-date tbody, .calendar-date thead tr:first-child').addClass('text-muted');
+                this.startDate = this.endDate = moment();
+                this.setCustomDates(this.startDate, this.endDate);
             } else {
                 this.calendarDisabled = false;
                 this.clearCalendar();
